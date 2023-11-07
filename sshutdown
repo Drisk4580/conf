@@ -1,0 +1,32 @@
+#!/bin/bash
+
+my_shutdown() {
+    echo -e "creating btrfs snapshot"
+
+    if [[ -d "/current_snapshot" ]]; then
+        echo "Clearing existing snapshot"
+        rm -rf /current_snapshot
+    fi
+
+    btrfs subvolume snapshot / /current_snapshot
+    shutdown -P now
+}
+
+check() {
+    case "$1" in
+    y)
+        my_shutdown
+        ;;
+    n)
+        ;;
+    *)
+        echo "please answer yes or no."
+        read answer
+        check "$answer"
+    esac
+}
+
+echo "Really shut down? [y/n] "
+read answer
+check "$answer"
+
